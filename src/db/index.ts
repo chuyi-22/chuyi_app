@@ -1,5 +1,5 @@
 import Dexie, { type Table } from 'dexie'
-import type { Course, Habit, HabitLog, Plan, Review, Task } from './types'
+import type { Course, FocusSession, Habit, HabitLog, Plan, Review, Task } from './types'
 import { todayKey, weekStartKey } from '../lib/date'
 
 class ChuyiDB extends Dexie {
@@ -9,6 +9,7 @@ class ChuyiDB extends Dexie {
   habitLogs!: Table<HabitLog, number>
   reviews!: Table<Review, number>
   courses!: Table<Course, number>
+  focusSessions!: Table<FocusSession, number>
 
   constructor() {
     super('chuyi')
@@ -22,6 +23,10 @@ class ChuyiDB extends Dexie {
     // v2：新增课表
     this.version(2).stores({
       courses: '++id, day',
+    })
+    // v3：新增专注记录
+    this.version(3).stores({
+      focusSessions: '++id, planId, date',
     })
   }
 }

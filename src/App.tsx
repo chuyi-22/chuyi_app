@@ -3,6 +3,7 @@ import { NavLink, Route, Routes, useLocation } from 'react-router-dom'
 import Home from './pages/Home'
 import Today from './pages/Today'
 import Plans from './pages/Plans'
+import Focus from './pages/Focus'
 import Schedule from './pages/Schedule'
 import Habits from './pages/Habits'
 import Review from './pages/Review'
@@ -19,6 +20,7 @@ const NAV = [
 
 export default function App() {
   const { pathname } = useLocation()
+  const isFocus = pathname.startsWith('/focus')
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'instant' as ScrollBehavior })
@@ -26,11 +28,12 @@ export default function App() {
 
   return (
     <>
-      <div className="shell">
+      <div className={`shell${isFocus ? ' shell-focus' : ''}`}>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/today" element={<Today />} />
           <Route path="/plans" element={<Plans />} />
+          <Route path="/focus/:id" element={<Focus />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/habits" element={<Habits />} />
           <Route path="/review" element={<Review />} />
@@ -38,7 +41,7 @@ export default function App() {
         </Routes>
       </div>
 
-      <nav className="nav">
+      {!isFocus && <nav className="nav">
         {NAV.map((item) => {
           const Icon = item.icon
           return (
@@ -53,7 +56,7 @@ export default function App() {
             </NavLink>
           )
         })}
-      </nav>
+      </nav>}
     </>
   )
 }

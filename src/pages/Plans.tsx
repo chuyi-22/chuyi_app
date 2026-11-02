@@ -1,4 +1,5 @@
 import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { db } from '../db'
 import type { Plan, PlanType } from '../db/types'
@@ -19,6 +20,7 @@ const THEME = {
 } as const
 
 export default function Plans() {
+  const navigate = useNavigate()
   const [type, setType] = useState<PlanType>('study')
   const [open, setOpen] = useState(false)
   const [confirmId, setConfirmId] = useState<number | null>(null)
@@ -111,14 +113,26 @@ export default function Plans() {
           const pct = Math.round((Math.min(progress, plan.target) / plan.target) * 100)
           const finished = progress >= plan.target
           return (
-            <div className="card plan-card" key={plan.id}>
+            <div
+              className="card plan-card plan-card-link"
+              key={plan.id}
+              onClick={() => plan.id && navigate(`/focus/${plan.id}`)}
+              role="button"
+              tabIndex={0}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && plan.id) navigate(`/focus/${plan.id}`)
+              }}
+            >
               <div className="plan-emoji">{plan.emoji}</div>
               <div className="plan-main">
                 <div className="between">
                   <h3 className="plan-title">{plan.title}</h3>
                   <button
                     className={`del-btn${confirmId === plan.id ? ' danger' : ''}`}
-                    onClick={() => remove(plan)}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      remove(plan)
+                    }}
                     aria-label="删除计划"
                   >
                     {confirmId === plan.id ? (
@@ -140,7 +154,10 @@ export default function Plans() {
               </div>
               <button
                 className={`step-btn${finished ? ' done' : ''}`}
-                onClick={() => step(plan, 1)}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  step(plan, 1)
+                }}
                 disabled={finished}
                 aria-label="完成一次"
               >

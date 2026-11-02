@@ -51,6 +51,16 @@ export interface Course {
   createdAt: number
 }
 
+export interface FocusSession {
+  id?: number
+  planId: number
+  date: string // YYYY-MM-DD
+  plannedSec: number // 目标秒数
+  actualSec: number // 实际专注秒数
+  completed: boolean // 是否跑满目标
+  createdAt: number
+}
+
 export interface Review {
   id?: number
   date: string
