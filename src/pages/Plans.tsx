@@ -7,7 +7,7 @@ import { weekStartKey } from '../lib/date'
 import { Empty, PageHead } from '../components/ui'
 import ProgressRing from '../components/ProgressRing'
 import Sheet from '../components/Sheet'
-import { IconCheck, IconPlus, IconTrash } from '../components/Icons'
+import { IconCheck, IconPlay, IconPlus, IconTrash, IconX } from '../components/Icons'
 
 const PLAN_EMOJIS: Record<PlanType, string[]> = {
   study: ['📘', '🎧', '✍️', '📖', '🧠', '🔬', '🗂️'],
@@ -24,6 +24,22 @@ export default function Plans() {
   const [type, setType] = useState<PlanType>('study')
   const [open, setOpen] = useState(false)
   const [confirmId, setConfirmId] = useState<number | null>(null)
+  const [showHint, setShowHint] = useState(() => {
+    try {
+      return !localStorage.getItem('focus-hint-seen')
+    } catch {
+      return false
+    }
+  })
+
+  function dismissHint() {
+    setShowHint(false)
+    try {
+      localStorage.setItem('focus-hint-seen', '1')
+    } catch {
+      /* 隐私模式下忽略 */
+    }
+  }
 
   const plans = useLiveQuery(() => db.plans.where('type').equals(type).toArray(), [type])
   const list = plans ?? []
@@ -103,6 +119,16 @@ export default function Plans() {
         </ProgressRing>
       </div>
 
+      {showHint && list.length > 0 && (
+        <div className="focus-hint">
+          <span className="focus-hint-icon">💡</span>
+          <span>点卡片下方的「开始专注」，可以计时和播放白噪音</span>
+          <button className="focus-hint-close" onClick={dismissHint} aria-label="知道了">
+            <IconX size={13} />
+          </button>
+        </div>
+      )}
+
       {list.length === 0 ? (
         <div className="card">
           <Empty emoji={type === 'study' ? '📚' : '🌿'} text="还没有计划，加一个想坚持的目标吧" />
@@ -123,46 +149,61 @@ export default function Plans() {
                 if (e.key === 'Enter' && plan.id) navigate(`/focus/${plan.id}`)
               }}
             >
-              <div className="plan-emoji">{plan.emoji}</div>
-              <div className="plan-main">
-                <div className="between">
-                  <h3 className="plan-title">{plan.title}</h3>
-                  <button
-                    className={`del-btn${confirmId === plan.id ? ' danger' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation()
-                      remove(plan)
-                    }}
-                    aria-label="删除计划"
-                  >
-                    {confirmId === plan.id ? (
-                      <span style={{ fontSize: 11, fontWeight: 700 }}>确认删除</span>
-                    ) : (
-                      <IconTrash size={15} />
-                    )}
-                  </button>
-                </div>
-                <p className="plan-desc">{plan.desc}</p>
-                <div className="between" style={{ marginTop: 10 }}>
-                  <div className="bar sky" style={{ flex: 1, marginRight: 12 }}>
-                    <i style={{ width: `${pct}%` }} />
+              <div className="plan-top">
+                <div className="plan-emoji">{plan.emoji}</div>
+                <div className="plan-main">
+                  <div className="between">
+                    <h3 className="plan-title">{plan.title}</h3>
+                    <button
+                      className={`del-btn${confirmId === plan.id ? ' danger' : ''}`}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        remove(plan)
+                      }}
+                      aria-label="删除计划"
+                    >
+                      {confirmId === plan.id ? (
+                        <span style={{ fontSize: 11, fontWeight: 700 }}>确认删除</span>
+                      ) : (
+                        <IconTrash size={15} />
+                      )}
+                    </button>
                   </div>
-                  <span className="num" style={{ fontSize: 13, color: 'var(--ink-soft)' }}>
-                    {progress} / {plan.target} {plan.unit}
-                  </span>
+                  <p className="plan-desc">{plan.desc}</p>
+                  <div className="between" style={{ marginTop: 10 }}>
+                    <div className="bar sky" style={{ flex: 1, marginRight: 12 }}>
+                      <i style={{ width: `${pct}%` }} />
+                    </div>
+                    <span className="num" style={{ fontSize: 13, color: 'var(--ink-soft)' }}>
+                      {progress} / {plan.target} {plan.unit}
+                    </span>
+                  </div>
                 </div>
               </div>
-              <button
-                className={`step-btn${finished ? ' done' : ''}`}
-                onClick={(e) => {
-                  e.stopPropagation()
-                  step(plan, 1)
-                }}
-                disabled={finished}
-                aria-label="完成一次"
-              >
-                {finished ? <IconCheck size={18} strokeWidth={2.6} /> : <IconPlus size={19} strokeWidth={2.4} />}
-              </button>
+
+              <div className="plan-actions">
+                <button
+                  className="focus-entry"
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    if (plan.id) navigate(`/focus/${plan.id}`)
+                  }}
+                >
+                  <IconPlay size={12} />
+                  开始专注
+                </button>
+                <button
+                  className={`step-btn${finished ? ' done' : ''}`}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    step(plan, 1)
+                  }}
+                  disabled={finished}
+                  aria-label="完成一次"
+                >
+                  {finished ? <IconCheck size={16} strokeWidth={2.6} /> : <IconPlus size={17} strokeWidth={2.4} />}
+                </button>
+              </div>
             </div>
           )
         })

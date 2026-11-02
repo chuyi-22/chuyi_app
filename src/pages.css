@@ -311,9 +311,74 @@
 
 .plan-card {
   display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 17px 16px;
+}
+
+.plan-top {
+  display: flex;
   align-items: flex-start;
   gap: 13px;
-  padding: 17px 16px;
+}
+
+.plan-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.focus-entry {
+  flex: 1;
+  height: 38px;
+  border-radius: 999px;
+  background: var(--sky-wash);
+  color: #3f6e8a;
+  font-size: 13px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: transform 0.16s ease, background 0.16s ease;
+}
+
+.focus-entry:active {
+  transform: scale(0.97);
+  background: #d6e9f7;
+}
+
+.focus-hint {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 14px;
+  border-radius: 16px;
+  background: var(--sky-wash);
+  color: #3f6e8a;
+  font-size: 12.5px;
+  font-weight: 600;
+  line-height: 1.45;
+  margin-bottom: 12px;
+  animation: floatIn 0.4s ease both;
+}
+
+.focus-hint-icon {
+  font-size: 15px;
+  flex: none;
+}
+
+.focus-hint-close {
+  margin-left: auto;
+  width: 22px;
+  height: 22px;
+  flex: none;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6e93ab;
+  background: rgba(255, 255, 255, 0.65);
 }
 
 .plan-emoji {

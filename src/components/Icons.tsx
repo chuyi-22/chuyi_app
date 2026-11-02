@@ -82,6 +82,14 @@ export function IconPlus({ size = 24, className, strokeWidth = 2 }: IconProps) {
   )
 }
 
+export function IconPlay({ size = 24, className }: IconProps) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor" className={className}>
+      <path d="M8 5.2v13.6c0 .8.9 1.3 1.6.9l10.2-6.8c.6-.4.6-1.3 0-1.7L9.6 4.3C8.9 3.9 8 4.4 8 5.2Z" />
+    </svg>
+  )
+}
+
 export function IconCheck({ size = 24, className, strokeWidth = 2.6 }: IconProps) {
   return (
     <svg {...base(size)} strokeWidth={strokeWidth} className={className}>
